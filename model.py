@@ -64,12 +64,10 @@ class Model:
                         if age == 0:
                             self.distribution_f[age] *= 0.75
                             self.distribution_m[age] *= 0.75
-                            #print(str(distribution_m[age]) + " / " + str(distribution_m_temp[age + 1]))
 
                         elif age < 60:
                             self.distribution_f[age] *= 0.95
                             self.distribution_m[age] *= 0.95
-                            #print(distribution_f_temp[age + 1] / distribution_f[age])
 
                             if age > 11 and age % birth_mean == 0:
                                 self.new_f += numpy.floor((self.distribution_f[age] * 2 + self.twins(int(self.distribution_f[age]))) / 2)
@@ -84,12 +82,7 @@ class Model:
                         self.distribution_f[age] = numpy.floor(self.distribution_f[age])
                         self.distribution_m[age] = numpy.floor(self.distribution_m[age])
 
-                        #distribution_f[age + 1] = distribution_f_temp[age + 1]
-                        #print(distribution_m)
-                        #distribution_m[age + 1] = distribution_m_temp[age + 1]
-
                         total[age] = self.distribution_f[age] + self.distribution_m[age]
-                        #print(int(distribution_f_temp[age + 1]))
                 
                 self.distribution_f.pop()
                 self.distribution_f.insert(0, self.new_f)
@@ -97,9 +90,6 @@ class Model:
                 self.distribution_m.insert(0, self.new_m)
 
                 self.new_f = self.new_m = 0
-
-                #print(distribution_m)
-                #print(distribution_m_temp)
 
                 self.sums.append(sum(total))
 
