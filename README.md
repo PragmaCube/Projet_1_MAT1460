@@ -4,7 +4,8 @@ Code python permettant d'estimer l'évolution d'une population d'éléphant au c
 ## Fonctionnalités
 
 - Simule une l'évolution d'une population d'éléphants à partir d'un jeu de données fourni
-- Permet la visualisation d'une simulation ou deux pour comparer
+- Permet la visualisation d'une simulation ou deux pour comparer différents taux de natalité
+- Permet la visualisation d'un nombre infini (hors limitation technique) de simulations faisant varier divers paramètres
 
 
 
