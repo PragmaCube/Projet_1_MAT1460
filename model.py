@@ -75,31 +75,37 @@ class Model:
 
         return twins_nbr
 
+    def death(self, nbr, probability):
+        death = 0
+
+        for i in range(nbr):
+            if random.random() > probability:
+                death += 1
+
+        return death
+
     def simulation(self, birth_mean, survival_rate = 0.95):
         for time in range(self.max_time):
                 for age in range(len(self.distribution_f)):
                     if age < 70:
                         if age == 0:
-                            self.distribution_f[age] *= 0.75
-                            self.distribution_m[age] *= 0.75
+                            self.distribution_f[age] -= self.death(self.distribution_f[age], 0.75)
+                            self.distribution_m[age] -= self.death(self.distribution_m[age], 0.75)
 
                         elif age < 60:
-                            self.distribution_f[age] *= survival_rate
-                            self.distribution_m[age] *= survival_rate
+                            self.distribution_f[age] -= self.death(self.distribution_f[age], survival_rate)
+                            self.distribution_m[age] -= self.death(self.distribution_m[age], survival_rate)
 
                             if age > 11 and age % birth_mean == 0:
-                                self.new_f += numpy.floor((self.distribution_f[age] * 2 + self.twins(int(self.distribution_f[age]))) / 2)
-                                self.new_m += numpy.floor((self.distribution_f[age] * 2 + self.twins(int(self.distribution_f[age]))) / 2)
+                                self.new_f += int(numpy.floor((self.distribution_f[age] * 2 + self.twins(int(self.distribution_f[age]))) / 2))
+                                self.new_m += int(numpy.floor((self.distribution_f[age] * 2 + self.twins(int(self.distribution_f[age]))) / 2))
                                 
                                 
 
                         else:
                             # Lorsque l'éléphant a plus de 60 ans, son taux de survie décroit linéairement.
-                            self.distribution_f[age] = self.distribution_f[age] * ((95 - 10 * (self.max_time % 10)) / 100)
-                            self.distribution_m[age] = self.distribution_m[age] * ((95 - 10 * (self.max_time % 10)) / 100)
-
-                        self.distribution_f[age] = numpy.floor(self.distribution_f[age])
-                        self.distribution_m[age] = numpy.floor(self.distribution_m[age])
+                            self.distribution_f[age] -= self.death(self.distribution_f[age], ((95 - 10 * (self.max_time % 10)) / 100))
+                            self.distribution_m[age] -= self.death(self.distribution_m[age], ((95 - 10 * (self.max_time % 10)) / 100))
 
                         total[age] = self.distribution_f[age] + self.distribution_m[age]
                 
