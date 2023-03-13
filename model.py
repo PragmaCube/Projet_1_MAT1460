@@ -183,7 +183,7 @@ class Model:
                             self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
                             self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
                         
-                        elif not administration:
+                        elif not administration and age % birth_mean == 0:
                             self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
                             self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
 
