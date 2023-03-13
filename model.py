@@ -94,13 +94,13 @@ class Model:
     # conséquences de l'administration (stress supplémentaire).
     def transfertAll(self, administration):
         if administration:
-            for age in range(11, len(self.elephants_f_free), 60):
+            for age in range(11, len(self.elephants_f_free), 59):
                 if self.elephants_f_process[age] != 0:
                     self.elephants_f_free[age] = self.elephants_f_process[age]
                     self.elephants_f_process[age] = 0
 
         else:
-            for age in range(11, len(self.elephants_f_free), 60):
+            for age in range(11, len(self.elephants_f_free), 59):
                 if self.elephants_f_free[age] != 0:
                     self.elephants_f_process[age] = self.elephants_f_free[age]
                     self.elephants_f_free[age] = 0
