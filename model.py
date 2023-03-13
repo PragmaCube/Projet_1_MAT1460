@@ -178,9 +178,14 @@ class Model:
                     # après avoir reçu une administration (ou pas). À noter que si rien ne se passe 
                     # (pas d'administration de dard), les femelles ne se reproduiront qu'à partir de 
                     # birth_mean années après le début de la simulation.
-                    if age >= 11 and years_since_administration % birth_mean == 0 and years_since_administration != 0:
-                        self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
-                        self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                    if age >= 11:
+                        if administration and years_since_administration % birth_mean == 0 and years_since_administration != 0: 
+                            self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                            self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                        
+                        elif not administration:
+                            self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                            self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
 
                 else:
                     # Les éléphants ayant plus de 60 ans ont un taux de survie qui diminue linéairement
@@ -209,17 +214,18 @@ class Model:
             self.sums.append(sum(total))
 
             # S'il y a trop d'éléphants, un dard est administré.
-            if sum(total) > 10300:
-                self.transfertAll(False)
-                years_since_administration = 0
+            if administration:
+                if sum(total) > 10300:
+                    self.transfertAll(False)
+                    years_since_administration = 0
 
-            # S'il y a trop peu d'éléphants, l'administration prend fin.
-            elif sum(total) < 7200:
-                self.transfertAll(True)
-                years_since_administration = 0
+                # S'il y a trop peu d'éléphants, l'administration prend fin.
+                elif sum(total) < 7200:
+                    self.transfertAll(True)
+                    years_since_administration = 0
 
-            else:
-                years_since_administration += 1
+                else:
+                    years_since_administration += 1
 
             if self.display:
                 print(f"elephants_f_process : {sum(self.elephants_f_process)}, elephants_f_free : {sum(self.elephants_f_free)}, elephants_m : {sum(self.elephants_m)}")
