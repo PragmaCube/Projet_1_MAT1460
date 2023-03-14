@@ -7,6 +7,7 @@ Code python permettant d'estimer l'évolution d'une population d'éléphant au c
 - Permet l'administration d'un dard contraceptif (ou non) pour réguler la population en fonction d'une stratégie déjà établie
 - Permet la visualisation d'une simulation ou deux pour comparer différents taux de natalité
 - Permet la visualisation d'un nombre infini (hors limitation technique) de simulations faisant varier divers paramètres
+- Permet de simuler une crise dans laquelle une certaine partie du troupeau meurt
 
 
 

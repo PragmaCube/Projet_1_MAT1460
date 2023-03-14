@@ -229,7 +229,7 @@ class Model:
                     years_since_administration = 0
 
                 # S'il y a trop peu d'éléphants, l'administration prend fin.
-                elif sum(total) < 7300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1])):
+                elif sum(total) < 7300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1] and time - disaster[1] < 40)):
                     self.transfertAll(True)
                     years_since_administration = 0
 
