@@ -134,7 +134,11 @@ class Model:
 
         return death
 
-    def simulation(self, birth_mean, survival_rate = 0.95, administration = False, stress_rate = 0.1):
+    def simulation(self, birth_mean, survival_rate = 0.95, administration = False, stress_rate = 0.1, disaster = [False, 0, 0]):
+        # disaster[0] : si oui ou non on simule une disparition subite du troupeau
+        # disaster[1] : à quel moment à lieu la disparition
+        # disaster[2] : la proportion des éléphants survivant
+
         # Les morts chez les mâles, les femelles avec un dard et celles sans.
         f_process_death = 0
         f_free_death = 0
@@ -148,6 +152,11 @@ class Model:
 
         for time in range(self.max_time):
             for age in range(len(self.elephants_f_free)):
+                if disaster[0] and time == disaster[1]:
+                    self.elephants_f_process[age] = int(self.elephants_f_process[age] * disaster[2])
+                    self.elephants_f_free[age] = int(self.elephants_f_free[age] * disaster[2])
+                    self.elephants_m[age] = int(self.elephants_m[age] * disaster[2])
+
                 if age >= 70:
                     # Si les éléphants ont 70 ans ou plus, ils meurent
                     self.elephants_f_free[age] = 0
@@ -220,7 +229,7 @@ class Model:
                     years_since_administration = 0
 
                 # S'il y a trop peu d'éléphants, l'administration prend fin.
-                elif sum(total) < 7200:
+                elif sum(total) < 7300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1])):
                     self.transfertAll(True)
                     years_since_administration = 0
 
@@ -250,16 +259,18 @@ class Model:
 
         plt.show()
 
-    def multi_plot(self, birth_means, survival_rates, administration, stress_rates):
+    def multi_plot(self, birth_means, survival_rates, administration, stress_rates, show, disaster = [False, 0, 0]):
         if len(birth_means) != len(survival_rates):
             return False
 
         for i in range(len(birth_means)):
             self.reset()
 
-            self.simulation(birth_means[i], survival_rates[i], administration[i], stress_rates[i])
-            plt.plot([i for i in range(self.max_time)], self.sums, label = f"1 éléphant / {str(birth_means[i])} ans | S = {survival_rates[i]} | sr = {stress_rates[i]}")
-            print(sum(self.sums) / self.max_time)
+            self.simulation(birth_means[i], survival_rates[i], administration[i], stress_rates[i], disaster)
+            if show[i]:
+                plt.plot([i for i in range(self.max_time)], self.sums, label = f"1 éléphant / {str(birth_means[i])} ans | S = {survival_rates[i]} | sr = {stress_rates[i]}")
+
+                print(sum(self.sums) / self.max_time)
 
         plt.xlabel("Années écoulées")
         plt.ylabel("Nombre d'éléphants")
