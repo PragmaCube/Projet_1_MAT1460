@@ -13,4 +13,4 @@ model = model.Model("Distribution selon l'age.csv", 65, False, [0, 0])
 #model.dual_plot([3, 4])
 
 # On fait ici 8 simulations pour tester l'influence de 3 paramètres différents
-model.multi_plot([3, 3, 4, 4, 3, 3, 4, 4], [0.95, 0.96, 0.95, 0.96, 0.95, 0.96, 0.95, 0.96], [True, True, True, True, True, True, True, True], [0.1, 0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15])
+model.multi_plot([3, 3, 4, 4], [0.95, 0.96, 0.95, 0.96], [True, True, True, True], [0.1, 0.1, 0.1, 0.1], [True, True, True, True], [False, 10, 0.3])
