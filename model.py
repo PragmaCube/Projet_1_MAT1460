@@ -69,7 +69,12 @@ class Model:
             self.elephants_m_base.append(self.elephants_m[i])
             self.elephants_f_process.append(0)
 
+            #if i >= 11 and i < 60:
+                #self.elephants_f_free[i] = int(self.elephants_f_free[i] * 0.15)
+                #self.elephants_f_process[i] = self.elephants_f_base[i] - self.elephants_f_free[i]
+
         self.elephants_f_free[cannot_breed[0]] -= cannot_breed[1]
+        print(self.elephants_f_process)
 
         # Nombre initial d'éléphants dans la simulation.
         #print(sum(self.elephants_m) + sum(self.elephants_f_free))
@@ -96,15 +101,32 @@ class Model:
         if administration:
             for age in range(11, len(self.elephants_f_free), 59):
                 if self.elephants_f_process[age] != 0:
-                    self.elephants_f_free[age] = self.elephants_f_process[age]
+                    self.elephants_f_free[age] += self.elephants_f_process[age]
                     self.elephants_f_process[age] = 0
 
         else:
             for age in range(11, len(self.elephants_f_free), 59):
                 if self.elephants_f_free[age] != 0:
-                    self.elephants_f_process[age] = self.elephants_f_free[age]
+                    self.elephants_f_process[age] += self.elephants_f_free[age]
                     self.elephants_f_free[age] = 0
     
+    def transfertPercent(self, administration, percent):
+        temp = 0
+
+        if administration:
+            for age in range(11, len(self.elephants_f_free), 59):
+                if self.elephants_f_process[age] != 0:
+                    temp = self.elephants_f_process[age]
+                    self.elephants_f_process = int(self.elephants_f_process * percent)
+                    self.elephants_f_free = temp - elephants_f_process
+
+        else:
+            for age in range(11, len(self.elephants_f_free), 59):
+                if self.elephants_f_process[age] != 0:
+                    temp = self.elephants_f_free[age]
+                    self.elephants_f_free = int(self.elephants_f_free * percent)
+                    self.elephants_f_process = temp - elephants_f_free
+
     # On réinitialise les listes utilisées en fonction des conditions initiales.
     def reset(self):
         for i in range(len(self.elephants_f_free)):
@@ -134,6 +156,64 @@ class Model:
 
         return death
 
+    def newSimulation(self, birth_mean, survival_rate = 0.95, administration = False, stress_rate = 0.1, disaster = [False, 0, 0]):
+        f_process_death = 0
+        f_free_death = 0
+        m_death = 0
+
+        for time in range(self.max_time):
+            for age in range(len(self.elephants_f_free)):
+                if age >= 70:
+                    self.elephants_f_free[age] = 0
+                    self.elephants_f_process[age] = 0
+                    self.elephants_m[age] = 0
+
+                elif age < 1:
+                    f_free_death = self.death(self.elephants_f_free[age], 0.75)
+                    m_death = self.death(self.elephants_m[age], 0.75)
+
+                    self.elephants_f_free[age] -= f_free_death
+                    self.elephants_m[age] -= m_death
+
+                elif age < 60:
+                    f_process_death = self.death(self.elephants_f_process[age], survival_rate - stress_rate)
+                    f_free_death = self.death(self.elephants_f_free[age], survival_rate)
+                    m_death = self.death(self.elephants_m[age], survival_rate)
+
+                    self.elephants_f_process[age] -= f_process_death
+                    self.elephants_f_free[age] -= f_free_death
+                    self.elephants_m[age] -= m_death
+
+                    if age >= 11:
+                        if age == 11:
+                            temp = self.elephants_f_free[age]
+                            self.elephants_f_free[age] = int(self.elephants_f_free[age] * 0.35)
+                            self.elephants_f_process[age] = temp - self.elephants_f_free[age]
+                        #if administration and years_since_administration_end % birth_mean == 0 and years_since_administration_end != 0 and years_since_administration > 1: 
+                            #self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                            #self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                        
+                        if age % birth_mean == 0:
+                            self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+                            self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
+
+                
+                total[age] = self.elephants_f_process[age] + self.elephants_m[age] + self.elephants_f_free[age]
+                
+            # On déplace les éléments de chaque liste vers la droite.
+            self.elephants_f_process.pop()
+            self.elephants_f_process.insert(0, 0)
+            self.elephants_m.pop()
+            self.elephants_m.insert(0, self.new_m)
+            self.elephants_f_free.pop()
+            self.elephants_f_free.insert(0, self.new_f)
+
+            self.new_f = self.new_m = 0
+
+            self.sums.append(sum(total))
+
+
+
     def simulation(self, birth_mean, survival_rate = 0.95, administration = False, stress_rate = 0.1, disaster = [False, 0, 0]):
         # disaster[0] : si oui ou non on simule une disparition subite du troupeau
         # disaster[1] : à quel moment à lieu la disparition
@@ -144,6 +224,10 @@ class Model:
         f_free_death = 0
         m_death = 0
 
+        #self.transfertAll(True)
+        #years_since_administration_end = 0
+        #administration_status = False
+
         # On veut éviter que des femelles puissent se reproduire directement
         # après que l'administration du dard ait pris fin. On conserve ainsi 
         # le fait qu'une femelle n'ait qu'un éléphant au bout de birth_mean 
@@ -151,6 +235,10 @@ class Model:
         years_since_administration_end = 0
 
         years_since_administration = 0
+
+        # True --> L'administration est en cours
+        # False --> Non
+        administration_status = False
 
         for time in range(self.max_time):
             for age in range(len(self.elephants_f_free)):
@@ -190,12 +278,12 @@ class Model:
                     # (pas d'administration de dard), les femelles ne se reproduiront qu'à partir de 
                     # birth_mean années après le début de la simulation.
                     if age >= 11:
-                        if administration and years_since_administration_end % birth_mean == 0 and years_since_administration_end != 0 and years_since_administration > 1: 
+                        if administration and years_since_administration_end % birth_mean == 0 and years_since_administration_end != 0 and years_since_administration > 1: # age % birth_mean == 0 
                             self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
                             self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
                         
                         elif not administration and age % birth_mean == 0:
-                            print("allo")
+                            #print("allo")
                             self.new_f += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
                             self.new_m += int(numpy.floor((self.elephants_f_free[age] * 2 + self.twins(int(self.elephants_f_free[age]))) / 2))
 
@@ -227,22 +315,53 @@ class Model:
 
             # S'il y a trop d'éléphants, un dard est administré.
             if administration:
-                if sum(total) > 10300:
+                if sum(total) >= 10000:
                     self.transfertAll(False)
-                    years_since_administration_end = 0
+                    #years_since_administration_end = 0
                     years_since_administration = 0
+                    administration_status = True
 
                 # S'il y a trop peu d'éléphants, l'administration prend fin.
-                elif sum(total) < 7300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1] and time - disaster[1] < 40)):
+                # Au sujet de la condition :
+                # Pour permettre à la population de se remettre de la crise, il faut baisser
+                # la condition minimale sur le retrait du dard. On le fait seulement si on se
+                # situe (dans le temps) après la crise. Par ailleurs, on ne veut pas que cela se
+                # poursuive indéfiniment : c'est pourquoi on limite cette baisse à 100 ans (qui est 
+                # certes beaucoup, mais nécessaire puisque les conséquences de cette crise peuvent se
+                # faire ressentir des décénies après).
+                
+                #elif sum(total) > 9300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1] and time - disaster[1] < 100)) * disaster[0] and not administration_status:
+                    #self.transfertPercent(False, 0.2)
+                    #administration_status = True
+                    #print("allo")
+
+                elif sum(total) < 10000 - ((10000 * (1 - disaster[2])) * (time >= disaster[1] and time - disaster[1] < 50 * (1 - disaster[2]))) * disaster[0] and administration_status:
                     self.transfertAll(True)
                     years_since_administration_end = 0
+                    administration_status = False
+
+                #elif sum(total) < 8300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1] and time - disaster[1] < 100)) * disaster[0] and administration_status:
+                    #self.transfertPercent(True, 0.4)
+                    #years_since_administration_end = 0
+                    #administration_status = False 
+
+                #elif sum(total) < 9300 - ((10000 * (1 - disaster[2])) * (time >= disaster[1] and time - disaster[1] < 100)) * disaster[0] and administration_status:
+                    #self.transfertPercent(True, 0.7)
+                    #years_since_administration_end = 0
+                    #administration_status = False
+                    #print("allo")
 
                 else:
-                    years_since_administration_end += 1
                     years_since_administration += 1
+                    #print(f"halp {sum(total)}")
+
+
+                if not administration_status:
+                    years_since_administration_end += 1
 
             if self.display:
-                print(f"elephants_f_process : {sum(self.elephants_f_process)}, elephants_f_free : {sum(self.elephants_f_free)}, elephants_m : {sum(self.elephants_m)}")
+                print(f"elephants_f_process : {sum(self.elephants_f_process)}, elephants_f_free : {sum(self.elephants_f_free)}, elephants_m : {sum(self.elephants_m)}, total : {sum(total)}")
+                print(self.elephants_f_free)
 
     def single_plot(self):
         plt.plot([i for i in range(self.max_time)], self.sums)
@@ -279,7 +398,7 @@ class Model:
 
         plt.xlabel("Années écoulées")
         plt.ylabel("Nombre d'éléphants")
-        plt.title("Simulation avec stratégie d'administration")
+        plt.title("Simulation avec stratégie d'administration et une même catastrophe")
         plt.legend()
 
         plt.show()
