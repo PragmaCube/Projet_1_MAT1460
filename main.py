@@ -8,7 +8,7 @@
 
 import model
 
-model = model.Model("Distribution selon l'age.csv", 125, False, [0, 0])
+model = model.Model("Distribution selon l'age.csv", 65, False, [0, 0])
 #model.dual_plot([3, 4])
 
 # On fait ici 8 simulations pour tester l'influence de 3 paramètres différents
@@ -19,4 +19,4 @@ model = model.Model("Distribution selon l'age.csv", 125, False, [0, 0])
 # 4 - Stress causé par le dard (taux de survie en moins)
 # 5 - Affichage des moyennes d'éléphants par année
 # 6 - Mise en place de la situation de crise : [a t-elle lieu ?, date d'effet, proportion de la population qui survit]
-model.multi_plot([3, 3, 4, 4], [0.95, 0.96, 0.95, 0.96], [True, True, True, True], [0.1, 0.1, 0.1, 0.1], [True, True, True, True], [False, 20, 0.1])
+model.multi_plot([3, 3, 4, 4], [0.95, 0.96, 0.95, 0.96], [True, True, True, True], [0.1, 0.1, 0.1, 0.1], [True, True, True, True], [True, 20, 0.1])
