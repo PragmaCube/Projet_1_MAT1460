@@ -22,9 +22,11 @@ def sum(list_):
     
 # La classe contenant le coeur du programme. 
 class Model:
-    def __init__(self, csv_file, max_time, display = [False, 0], cannot_breed = [0, 0]):
+    def __init__(self, csv_file, max_time, display = [False, 0], cannot_breed = [0, 0], adaptive = True):
         self.max_time = max_time
         self.display = display
+
+        self.adaptive = adaptive
 
         self.elephants = []
 
@@ -154,7 +156,7 @@ class Model:
         return death
 
     # Stratégie restrictive
-    def other_simulation(self, birth_mean, survival_rate = 0.95, administration = False, stress_rate = 0.1, disaster = [False, 0, 0], coef = 0.35):
+    def non_adaptive_simulation(self, birth_mean, survival_rate = 0.95, administration = False, stress_rate = 0.1, disaster = [False, 0, 0], coef = 0.35):
         f_process_death = 0
         f_free_death = 0
         m_death = 0
@@ -380,12 +382,15 @@ class Model:
             return False
 
         for i in range(len(birth_means)):
+            # On s'assure de faire tourner la simulation sur les conditions initiales.
             self.reset()
-            #coef = 0.10 / 40
 
-            self.simulation(birth_means[i], survival_rates[i], administration[i], stress_rates[i], disaster)
+            if self.adaptive:
+                self.simulation(birth_means[i], survival_rates[i], administration[i], stress_rates[i], disaster)
 
-            #coef += 0.10 / 40
+            else:
+                self.non_adaptive_simulation(birth_means[i], survival_rates[i], administration[i], stress_rates[i], disaster)
+
 
             if show[i]:
                 plt.plot([i for i in range(self.max_time)], self.sums, label = f"1 éléphant / {str(birth_means[i])} ans | taux de survie : {survival_rates[i]}")
@@ -398,7 +403,7 @@ class Model:
 
         plt.xlabel("Années écoulées")
         plt.ylabel("Nombre d'éléphants")
-        plt.title("Simulation avec stratégie adaptive mais sans catastrophe")
+        plt.title("Simulation sans stratégie et sans catastrophe")
         plt.legend()
 
         plt.show()
