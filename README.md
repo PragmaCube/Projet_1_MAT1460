@@ -1,5 +1,5 @@
 # Projet_1_MAT1460
-Code python permettant d'estimer l'évolution d'une population d'éléphant au cours du temps, dans le cadre du projet 1 du cours MAT1460 de l'UdeM (session d'hiver 2023). Le programme fonctionne peut importe le système d'exploitation.
+Code python permettant d'estimer l'évolution d'une population d'éléphant au cours du temps, dans le cadre du projet 1 du cours MAT1460 de l'UdeM (session d'hiver 2023). Le programme fonctionne peu importe le système d'exploitation.
 
 ## Fonctionnalités
 

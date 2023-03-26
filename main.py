@@ -10,7 +10,6 @@ import model
 
 # Changer le dernier paramètre à False pour basculer en stratégie restrictive.
 model = model.Model("Distribution selon l'age.csv", 125, [False, 21], [0, 0], True)
-#model.dual_plot([3, 4])
 
 # On fait ici 8 simulations pour tester l'influence de 3 paramètres différents
 # Explication des paramètres dans l'ordre :
