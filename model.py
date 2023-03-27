@@ -52,7 +52,7 @@ class Model:
                 if row[17] != "Femelles" and row[17] != "":
                     self.elephants_f_free.append(int(row[17]))
 
-                if row[18] != "Mâles" and row[18] != "":
+                if row[18] != "Males" and row[18] != "":
                     self.elephants_m.append(int(row[18]))
 
         # On retire les deux derniers éléments puisque qu'ils ne contiennent
